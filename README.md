@@ -60,4 +60,14 @@ How many times do we need to perform 3x3 convolution operation to reach 1x1 from
 3x3  | 3x3 > 1x1
 
 
+Session3
+Number of parameters in keras is different from pytorch. Mention why.
+
+
+PyTorch doesn't have a function to calculate the total number of parameters as Keras does, but it's possible to sum the number of elements for every parameter group:
+
+pytorch_total_params = sum(p.numel() for p in model.parameters())
+If you want to calculate only the trainable parameters:
+
+pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
