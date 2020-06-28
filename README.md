@@ -123,7 +123,16 @@ When do we stop convolutions and go ahead with a larger kernel or some other alt
 Stacking smaller convolutional layers is lighter, than having bigger ones. It also tends to improve the result, with the simple intuition that it results in more layers and deeper networks.
 How do we know our network is not going well, comparatively, very early
 Batch Size, and effects of batch size
+To conclude, and answer your question, a smaller mini-batch size (not too small) usually leads not only to a smaller number of iterations of a training algorithm, than a large batch size, but also to a higher accuracy overall, i.e, a neural network that performs better, in the same amount of training time, or less.
 When to add validation checks
+alidation is a process in machine learning and not just confined to neural networks. This is most beneficial when you don't have huge amount of data.
+
+You divide your existing dataset into three parts. 1. Trainset set 2. Validation set 3. Test set
+
+First you train your model using the training data and get your model coefficients and compute the error on training set which is your training error. Usually without the validation set, you would just compute the error on the test set and get an estimate on accuracy of your model. So the whole point of test set is that just by using whole data for training won't give a good estimate on the accuracy for optimising the model, a test set will give an estimate on the accuracy of the model subjected to outside data. This is the usual process.
+
+But when you have less data, this might not result in best optimisation. So we further split the training data into validation set and training set. We train the model on the training set, then compute error on the validation set multiple times by varying critical model parameters for ex: step size in gradient descent or l2 penalty value. Then analyse the value of parameters in the model which results in less error on validation set. Further you take this model and compute error on test set.
 LR schedule and concept behind it
+Learning rate schedules seek to adjust the learning rate during training by reducing the learning rate according to a pre-defined schedule. Common learning rate schedules include time-based decay, step decay and exponential decay. For illustrative purpose, I construct a convolutional neural network trained on CIFAR-10, using stochastic gradient descent (SGD) optimization algorithm with different learning rate schedules to compare the performances.
 Adam vs SGD
 SGD is a variant of gradient descent. Instead of performing computations on the whole dataset — which is redundant and inefficient — SGD only computes on a small subset or random selection of data examples. ... Essentially Adam is an algorithm for gradient-based optimization of stochastic objective functions.
