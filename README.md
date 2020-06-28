@@ -126,3 +126,4 @@ Batch Size, and effects of batch size
 When to add validation checks
 LR schedule and concept behind it
 Adam vs SGD
+SGD is a variant of gradient descent. Instead of performing computations on the whole dataset — which is redundant and inefficient — SGD only computes on a small subset or random selection of data examples. ... Essentially Adam is an algorithm for gradient-based optimization of stochastic objective functions.
