@@ -136,3 +136,73 @@ LR schedule and concept behind it
 Learning rate schedules seek to adjust the learning rate during training by reducing the learning rate according to a pre-defined schedule. Common learning rate schedules include time-based decay, step decay and exponential decay. For illustrative purpose, I construct a convolutional neural network trained on CIFAR-10, using stochastic gradient descent (SGD) optimization algorithm with different learning rate schedules to compare the performances.
 Adam vs SGD
 SGD is a variant of gradient descent. Instead of performing computations on the whole dataset — which is redundant and inefficient — SGD only computes on a small subset or random selection of data examples. ... Essentially Adam is an algorithm for gradient-based optimization of stochastic objective functions.
+
+What are cyclical learning rates?
+
+we can define learning rate schedules that monotonically decrease our learning rate after each epoch.
+
+By decreasing our learning rate over time we can allow our model to (ideally) descend into lower areas of the loss landscape.
+
+In practice; however, there are a few problems with a monotonically decreasing learning rate:
+
+First, our model and optimizer are still sensitive to our initial choice in learning rate.
+Second, we don’t know what the initial learning rate should be — we may need to perform 10s to 100s of experiments just to find our initial learning rate.
+Finally, there is no guarantee that our model will descend into areas of low loss when lowering the learning rate.
+To address these issues, Leslie Smith of the NRL introduced Cyclical Learning Rates in his 2015 paper, Cyclical Learning Rates for Training Neural Networks.
+
+Now, instead of monotonically decreasing our learning rate, we instead:
+
+Define the lower bound on our learning rate (called “base_lr”).
+Define the upper bound on the learning rate (called the “max_lr”).
+Allow the learning rate to oscillate back and forth between these two bounds when training, slowly increasing and decreasing the learning rate after every batch update.
+
+An example of a Cyclical Learning Rate can be seen in Figure 1.
+
+Notice how our learning rate follows a triangular pattern. First, the learning rate is very small. Then, over time, the learning rate continues to grow until it hits the maximum value. The learning rate then descends back down to the base value. This cyclical pattern continues throughout training.
+
+Why should we use Cyclical Learning Rates?
+
+Figure 2: Monotonically decreasing learning rates could lead to a model that is stuck in saddle points or a local minima. By oscillating learning rates cyclically, we have more freedom in our initial learning rate, can break out of saddle points and local minima, and reduce learning rate tuning experimentation. (image source)
+As mentioned above, Cyclical Learning Rates enables our learning rate to oscillate back and forth between a lower and upper bound.
+
+So, why bother going through all the trouble?
+
+Why not just monotonically decrease our learning rate, just as we’ve always done?
+
+The first reason is that our network may become stuck in either saddle points or local minima, and the low learning rate may not be sufficient to break out of the area and descend into areas of the loss landscape with lower loss.
+
+Secondly, our model and optimizer may be very sensitive to our initial learning rate choice. If we make a poor initial choice in learning rate, our model may be stuck from the very start.
+How do we use Cyclical Learning Rates?
+
+Figure 3: Brad Kenstler’s implementation of deep learning Cyclical Learning Rates for Keras includes three modes — “triangular”, “triangular2”, and “exp_range”. Cyclical learning rates seek to handle training issues when your learning rate is too high or too low shown in this figure. (image source)
+We’ll be using Brad Kenstler’s implementation of Cyclical Learning Rates for Keras.
+
+In order to use this implementation we need to define a few values first:
+
+Batch size: Number of training examples to use in a single forward and backward pass of the network during training.
+Batch/Iteration: Number of weight updates per epoch (i.e., # of total training examples divided by the batch size).
+Cycle: Number of iterations it takes for our learning rate to go from the lower bound, ascend to the upper bound, and then descend back to the lower bound again.
+Step size: Number of iterations in a half cycle. Leslie Smith, the creator of CLRs, recommends that the step_size should be (2-8) * training_iterations_in_epoch). In practice, I have found that step sizes of either 4 or 8 work well in most situations.
+With these terms defined, let’s see how they work together to define a Cyclical Learning Rate policy.
+
+The “triangular” policy
+The “triangular2” policy
+The “exp_range” policy
+
+
+
+The example has a probe function allowing us to test different hyperparameters on the same model.
+
+def probe(model, criterion, optimizer, bs, epochs, lr, wd_factor, color):
+As you noted we provide:
+
+the model (our LR model)
+the criterion function which is always nn.CrossEntropyLoss() for our MNIST example,
+the optimizer, in fact I tested with both SGD, and Adam, but any optimizer can be used.
+the bach size, in here this is set to 64,
+the number of epochs, in here I examined a single epoch only,
+the learning rate (it depends if we will use the momentum or no),
+our custom weight decay factor wd_factor or 0 if we don’t plan to use custom WD
+and the color
+
+https://dejanbatanjac.github.io/2019/07/02/Impact-of-WD.html
